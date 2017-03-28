@@ -4,7 +4,7 @@ Author: Wenchang Yang (yang.wenchang@uci.edu)
 import matplotlib.pyplot as plt
 from matplotlib import dates
 import datetime
-
+import numpy as np
 
 def xticksyear(base=1, month=1, day=1, tz=None, ax=None):
     """Make ticks on a given day of each year that is a multiple of base."""

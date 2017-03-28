@@ -90,8 +90,8 @@ def mapplot(lon=None, lat=None, **kw):
         lonlatbox_kw: dict parameters used in plotting lonlatbox.
 
         fill_continents: boolean, default is False.
-        continents_color: color of continents, default is 0.5.
-        coastlines_color: color of coastlines, default is 0.66.
+        continents_color: color of continents, default is 0.33.
+        coastlines_color: color of coastlines, default is 0.33.
         coastlines_width: line width of coastlines, default is 1.
     '''
 
@@ -167,13 +167,13 @@ def mapplot(lon=None, lat=None, **kw):
             latlat[i3+1:i4],
             -90, latlat[i4:i5+1], -90,
             latlat[i5+1:]))
-        continents_color = kw.pop('continents_color', '0.5')
+        continents_color = kw.pop('continents_color', '0.33')
         plt.fill(lonlon, latlat,
             color=continents_color, edgecolor='none',
             **kw)
     else:
         # plot coastlines
-        coastlines_color = kw.pop('coastlines_color', '0.66')
+        coastlines_color = kw.pop('coastlines_color', '0.33')
         coastlines_width = kw.pop('linewidth', 1)
         coastlines_width = kw.pop('coastlines_width', coastlines_width)
         plt.plot(lonlon, latlat,

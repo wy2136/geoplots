@@ -41,11 +41,11 @@ def geoplot(data=None, lon=None, lat=None, **kw):
 
         fill_continents: bool value (False as default).
         continents_kw: dict parameter used in the Basemap.fillcontinents method.
-        continents_color: color of continents ('0.5' as default).
+        continents_color: color of continents ('0.33' as default).
         lake_color: color of lakes ('none' as default).
 
         coastlines_kw: dict parameter used in the Basemap.drawcoastlines method.
-        coastlines_color: color of coast lines ('0.66' as default).
+        coastlines_color: color of coast lines ('0.33' as default).
 
         parallels_kw: dict parameters used in the Basemap.drawparallels method.
         parallels: parallels to be drawn (None as default).
@@ -289,7 +289,7 @@ def geoplot(data=None, lon=None, lat=None, **kw):
     if fill_continents:
         # use Basemap.fillcontinents method
         continents_kw = kw.pop('continents_kw', {})
-        continents_color = kw.pop('continents_color', '0.5')
+        continents_color = kw.pop('continents_color', '0.33')
         continents_color = continents_kw.pop('color', continents_color)
         lake_color = kw.pop('lake_color', 'none')
         lake_color = continents_kw.pop('lake_color', lake_color)
@@ -298,9 +298,12 @@ def geoplot(data=None, lon=None, lat=None, **kw):
     else:
         # use Basemap.drawcoastlines method
         coastlines_kw = kw.pop('coastlines_kw', {})
-        coastlines_color = kw.pop('coastlines_color', '0.66')
+        coastlines_color = kw.pop('coastlines_color', '0.33')
         coastlines_color = coastlines_kw.pop('color', coastlines_color)
-        m.drawcoastlines(color=coastlines_color, linewidth=0.5)
+        coastlines_lw = kw.pop('coastlines_lw', 0.5)
+        coastlines_lw = coastlines_kw.pop('lw', coastlines_lw)
+        m.drawcoastlines(color=coastlines_color, linewidth=coastlines_lw,
+            **coastlines_kw)
 
     # parallels
     gridon = kw.pop('gridon', False)
@@ -310,7 +313,7 @@ def geoplot(data=None, lon=None, lat=None, **kw):
     parallels = parallels_kw.pop('parallels', parallels)
     parallels_color = kw.pop('parallels_color', '0.75')
     parallels_color = parallels_kw.pop('color', parallels_color)
-    if proj in ('cyl',):
+    if proj in ('cyl', 'hammer', 'moll'):
         parallels_labels = kw.pop('parallels_labels', [1,0,0,0])
     else:
         parallels_labels = kw.pop('parallels_labels', [0,0,0,0])
@@ -320,7 +323,9 @@ def geoplot(data=None, lon=None, lat=None, **kw):
             labels=parallels_labels, linewidth=1.0, **parallels_kw)
     elif gridon:
         m.drawparallels(np.arange(-90, 91, 30), color=parallels_color,
-            labels=parallels_labels, linewidth=1.0, **parallels_kw)
+            labels=parallels_labels,
+            #linewidth=1.0,
+            **parallels_kw)
 
     # meridians
     meridians_kw = kw.pop('meridians_kw', {})
@@ -331,8 +336,8 @@ def geoplot(data=None, lon=None, lat=None, **kw):
     meridians_color = meridians_kw.pop('color', meridians_color)
     if proj in ('cyl',):
         meridians_labels = kw.pop('meridians_labels', [0,0,0,1])
-    # elif proj in ('npstere', 'nplaea', 'npaeqd', 'spstere', 'splaea', 'spaeqd'):
-    #     meridians_labels = kw.pop('meridians_labels', [1,0,0,0])
+    elif proj in ('npstere', 'nplaea', 'npaeqd', 'spstere', 'splaea', 'spaeqd'):
+        meridians_labels = kw.pop('meridians_labels', [1,1,0,0])
     else:
         meridians_labels = kw.pop('meridians_labels', [0,0,0,0])
     meridians_labels = meridians_kw.pop('labels', meridians_labels)
@@ -340,8 +345,10 @@ def geoplot(data=None, lon=None, lat=None, **kw):
         m.drawmeridians(meridians, color=meridians_color,
             labels=meridians_labels, linewidth=1.0, **meridians_kw)
     elif gridon:
-        m.drawmeridians(np.arange(-180, 360, 30), color=meridians_color,
-            labels=meridians_labels, linewidth=1.0, **meridians_kw)
+        m.drawmeridians(np.arange(0, 360, 30), color=meridians_color,
+            labels=meridians_labels,
+            #linewidth=1.0,
+            **meridians_kw)
 
     # lonlatbox
     lonlatbox = kw.pop('lonlatbox', None)
