@@ -43,6 +43,7 @@ def geoplot(data=None, lon=None, lat=None, **kw):
         continents_kw: dict parameter used in the Basemap.fillcontinents method.
         continents_color: color of continents ('0.33' as default).
         lake_color: color of lakes ('none' as default).
+        ocean_color: color of ocean (None as default).
 
         coastlines_kw: dict parameter used in the Basemap.drawcoastlines method.
         coastlines_color: color of coast lines ('0.33' as default).
@@ -295,7 +296,9 @@ def geoplot(data=None, lon=None, lat=None, **kw):
         lake_color = continents_kw.pop('lake_color', lake_color)
         m.fillcontinents(color=continents_color, lake_color=lake_color,
             **continents_kw)
-    else:
+    # else:
+    draw_coastlines = kw.pop('draw_coastlines', not fill_continents)
+    if draw_coastlines:
         # use Basemap.drawcoastlines method
         coastlines_kw = kw.pop('coastlines_kw', {})
         coastlines_color = kw.pop('coastlines_color', '0.33')
@@ -304,6 +307,9 @@ def geoplot(data=None, lon=None, lat=None, **kw):
         coastlines_lw = coastlines_kw.pop('lw', coastlines_lw)
         m.drawcoastlines(color=coastlines_color, linewidth=coastlines_lw,
             **coastlines_kw)
+    ocean_color = kw.pop('ocean_color', None)
+    if ocean_color is not None:
+        m.drawmapboundary(fill_color=ocean_color)
 
     # parallels
     gridon = kw.pop('gridon', False)
