@@ -113,22 +113,28 @@ def yticks2p(yticks=None, **kw):
     ax = plt.gca()
     ax.invert_yaxis()
 
-def xticks2month(show_initials=False, **kw):
+def xticks2month(xticks=None, show_initials=False, **kw):
     '''Convert xticks to months. '''
+    if xticks is None:
+        xticks = range(1,13)
+    month_numbers = [(m-1)%12 + 1 for m in xticks]
     months = [datetime.datetime(2000, month, 1).strftime('%b')
-        for month in range(1, 13)]
+        for month in month_numbers]
     if show_initials:
         months = [mon[0] for mon in months]
-    plt.xlim(.5,12.5)
-    plt.xticks(range(1,13),months, **kw)
-def yticks2month(show_initials=False, **kw):
+    plt.xlim(xticks[0]-0.5, xticks[-1]+0.5)
+    plt.xticks(xticks,months, **kw)
+def yticks2month(yticks=None, show_initials=False, **kw):
     '''Convert yticks to months. '''
+    if yticks is None:
+        yticks = range(1, 13)
+    month_numbers = [(m-1)%12 + 1 for m in yticks]
     months = [datetime.datetime(2000, month, 1).strftime('%b')
-        for month in range(1, 13)]
+        for month in month_numbers]
     if show_initials:
         months = [mon[0] for mon in months]
-    plt.ylim(.5,12.5)
-    plt.yticks(range(1,13),months, **kw)
+    plt.ylim(yticks[0]-0.5, yticks[-1]+0.5)
+    plt.yticks(yticks, months, **kw)
     plt.gca().invert_yaxis()
 
 def xticks2dayofyear(**kw):

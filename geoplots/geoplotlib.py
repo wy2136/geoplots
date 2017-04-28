@@ -48,14 +48,17 @@ def geoplot(data=None, lon=None, lat=None, **kw):
         coastlines_kw: dict parameter used in the Basemap.drawcoastlines method.
         coastlines_color: color of coast lines ('0.33' as default).
 
+        gridOn: bool value (False as default).
+        gridLabelOn: bool value (False as default).
+
         parallels_kw: dict parameters used in the Basemap.drawparallels method.
         parallels: parallels to be drawn (None as default).
-        parallels_color: color of parallels ('0.75' as default).
+        parallels_color: color of parallels ('0.5' as default).
         parallels_labels:[0,0,0,0] or [1,0,0,0].
 
         meridians_kw: dict parameters used in the Basemap.drawmeridians method.
         meridians: meridians to be drawn (None as default).
-        meridians_color: color of meridians ('0.75' as default).
+        meridians_color: color of meridians (parallels_color as default).
         meridians_labels: [0,0,0,0] or [0,0,0,1].
 
         lonlatbox: None or (lon_start, lon_end, lat_start, lat_end).
@@ -312,25 +315,30 @@ def geoplot(data=None, lon=None, lat=None, **kw):
         m.drawmapboundary(fill_color=ocean_color)
 
     # parallels
-    gridon = kw.pop('gridon', False)
+    gridOn = kw.pop('gridOn', False)
+    gridLabelOn = kw.pop('gridLabelOn', False)
     parallels_kw = kw.pop('parallels_kw', {})
     # parallels = kw.pop('parallels', np.arange(-90,91,30))
     parallels = kw.pop('parallels', None)
     parallels = parallels_kw.pop('parallels', parallels)
-    parallels_color = kw.pop('parallels_color', '0.75')
+    parallels_color = kw.pop('parallels_color', '0.5')
     parallels_color = parallels_kw.pop('color', parallels_color)
-    if proj in ('cyl', 'hammer', 'moll'):
-        parallels_labels = kw.pop('parallels_labels', [1,0,0,0])
-    else:
-        parallels_labels = kw.pop('parallels_labels', [0,0,0,0])
+    parallels_lw = kw.pop('parallels_lw', 0.5)
+    parallels_lw = parallels_kw.pop('lw', parallels_lw)
+    parallels_labels = kw.pop('parallels_labels', None)
     parallels_labels = parallels_kw.pop('labels', parallels_labels)
+    if parallels_labels is None:
+        if gridLabelOn:
+            parallels_labels = [1, 0, 0, 0]
+        else:
+            parallels_labels = [0, 0, 0, 0]
     if parallels is not None:
         m.drawparallels(parallels, color=parallels_color,
-            labels=parallels_labels, linewidth=1.0, **parallels_kw)
-    elif gridon:
-        m.drawparallels(np.arange(-90, 91, 30), color=parallels_color,
             labels=parallels_labels,
-            #linewidth=1.0,
+            linewidth=parallels_lw, **parallels_kw)
+    elif gridOn:
+        m.drawparallels(np.arange(-90, 91, 30), color=parallels_color,
+            linewidth=parallels_lw, labels=parallels_labels,
             **parallels_kw)
 
     # meridians
@@ -340,20 +348,30 @@ def geoplot(data=None, lon=None, lat=None, **kw):
     meridians = meridians_kw.pop('meridians', meridians)
     meridians_color = kw.pop('meridians_color', parallels_color)
     meridians_color = meridians_kw.pop('color', meridians_color)
-    if proj in ('cyl',):
-        meridians_labels = kw.pop('meridians_labels', [0,0,0,1])
-    elif proj in ('npstere', 'nplaea', 'npaeqd', 'spstere', 'splaea', 'spaeqd'):
-        meridians_labels = kw.pop('meridians_labels', [1,1,0,0])
-    else:
-        meridians_labels = kw.pop('meridians_labels', [0,0,0,0])
+    meridians_lw = kw.pop('meridians_lw', parallels_lw)
+    meridians_lw = meridians_kw.pop('lw', meridians_lw)
+    meridians_labels = kw.pop('meridians_labels', None)
     meridians_labels = meridians_kw.pop('labels', meridians_labels)
+    if meridians_labels is None:
+        if gridLabelOn:
+            if proj in ('npstere', 'nplaea', 'npaeqd',
+                'spstere', 'splaea', 'spaeqd'):
+                meridians_labels = [1, 1, 0, 0]
+            elif proj in ('cyl',):
+                meridians_labels = [0, 0, 0, 1]
+            else:
+                meridians_labels = [0, 0, 0, 0]
+                print('Meridian are not labeled.')
+        else:
+            meridians_labels = [0, 0, 0, 0]
     if meridians is not None:
         m.drawmeridians(meridians, color=meridians_color,
-            labels=meridians_labels, linewidth=1.0, **meridians_kw)
-    elif gridon:
+            labels=meridians_labels,
+            linewidth=meridians_lw, **meridians_kw)
+    elif gridOn:
         m.drawmeridians(np.arange(0, 360, 30), color=meridians_color,
             labels=meridians_labels,
-            #linewidth=1.0,
+            linewidth=meridians_lw,
             **meridians_kw)
 
     # lonlatbox
