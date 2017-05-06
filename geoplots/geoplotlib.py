@@ -48,7 +48,7 @@ def geoplot(data=None, lon=None, lat=None, **kw):
         coastlines_kw: dict parameter used in the Basemap.drawcoastlines method.
         coastlines_color: color of coast lines ('0.33' as default).
 
-        gridOn: bool value (False as default).
+        gridOn: bool value (True as default).
         gridLabelOn: bool value (False as default).
 
         parallels_kw: dict parameters used in the Basemap.drawparallels method.
@@ -315,7 +315,7 @@ def geoplot(data=None, lon=None, lat=None, **kw):
         m.drawmapboundary(fill_color=ocean_color)
 
     # parallels
-    gridOn = kw.pop('gridOn', False)
+    gridOn = kw.pop('gridOn', True)
     gridLabelOn = kw.pop('gridLabelOn', False)
     parallels_kw = kw.pop('parallels_kw', {})
     # parallels = kw.pop('parallels', np.arange(-90,91,30))
@@ -673,26 +673,43 @@ def geoplot(data=None, lon=None, lat=None, **kw):
 
     # quiverplot
     elif plot_type in ('quiver',):
+        nGrids = kw.pop('nGrids', 50)
+        nx = kw.pop('nx', nGrids)
+        ny = kw.pop('ny', nGrids)
         stride = kw.pop('stride', 1)
         stride_lon = kw.pop('stride_lon', stride)
         stride_lat = kw.pop('stride_lat', stride)
-        lon_ = lon[::stride_lon] # subset of lon
-        lat_ = lat[::stride_lat]
-        u_ = u[::stride_lat, ::stride_lon]
-        v_ = v[::stride_lat, ::stride_lon]
-        # sparse polar area
-        sparse_polar_grids = kw.pop('sparse_polar_grids', True)
-        if sparse_polar_grids:
-            msk = np.empty(u_.shape)*np.nan
-            for i in range(lat_.size):
-                step = int(1./np.cos(lat_[i] * np.pi/180))
-                msk[i, 0::step] = 0
-            u_ += msk
-            v_ += msk
-        Lon_, Lat_ = np.meshgrid(lon_, lat_)
-        u_rot, v_rot, X_, Y_ = m.rotate_vector(
-            u_, v_, Lon_, Lat_, returnxy=True
-        )
+        print(stride, stride_lon, stride_lat)
+        if (stride != 1) or (stride_lon != 1) or (stride_lat != 1): # compatible with old api, with stride, stride_lon, stride_lat controling quiver grids. To be obsolete. Use nGrids, nx, ny instead
+            print('stride used')
+            lon_ = lon[::stride_lon] # subset of lon
+            lat_ = lat[::stride_lat]
+            u_ = u[::stride_lat, ::stride_lon]
+            v_ = v[::stride_lat, ::stride_lon]
+            # sparse polar area
+            sparse_polar_grids = kw.pop('sparse_polar_grids', True)
+            if sparse_polar_grids:
+                msk = np.empty(u_.shape)*np.nan
+                for i in range(lat_.size):
+                    step = int(1./np.cos(lat_[i] * np.pi/180))
+                    msk[i, 0::step] = 0
+                u_ += msk
+                v_ += msk
+            Lon_, Lat_ = np.meshgrid(lon_, lat_)
+            u_rot, v_rot, X_, Y_ = m.rotate_vector(
+                u_, v_, Lon_, Lat_, returnxy=True
+            )
+        else: # use nGrids, nx, ny to control the quiver grids
+            if lon.max() > 180:
+                u_,lon_ = shiftgrid(180.,u,lon,start=False)
+                v_,lon_ = shiftgrid(180.,v,lon,start=False)
+            else:
+                u_ = u
+                v_ = v
+                lon_ = lon
+            u_rot, v_rot, X_, Y_ = m.transform_vector(
+                u_, v_, lon_, lat, nx, ny, returnxy=True
+            )
         quiver_color = kw.pop('quiver_color', 'g')
         quiver_scale = kw.pop('quiver_scale', None)
         hide_qkey = kw.pop('hide_qkey', False)
