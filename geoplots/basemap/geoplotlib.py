@@ -305,39 +305,25 @@ def geoplot(data=None, lon=None, lat=None, **kw):
     # show continents or plot coast lines
     # ocean
     ocean_on = kw.pop('ocean_on', False)
-    oceanmask_on = kw.pop('oceanmask_on', False)
-    if oceanmask_on:
-        ocean_zorder = 100
-    else:
-        ocean_zorder = 0
     default_ocean_color = [ 0.59375, 0.71484375, 0.8828125]
     ocean_color = kw.pop('ocean_color', default_ocean_color)
-    if ocean_on or oceanmask_on:
-        m.drawmapboundary(fill_color=ocean_color, zorder=ocean_zorder)
+    if ocean_on:
+        m.drawmapboundary(fill_color=ocean_color)
 
     # land
     land_on = kw.pop('land_on', False)
-    landmask_on = kw.pop('landmask_on', False)
-    if landmask_on:
-        land_zorder = 100
-    else:
-        if ocean_on:
-            land_zorder = 1
-        else:
-            land_zorder = 0
     land_kw = kw.pop('land_kw', {})
     land_color = kw.pop('land_color', '0.33')
     land_color = land_kw.pop('color', land_color)
     lake_color = kw.pop('lake_color', 'none')
     lake_color = land_kw.pop('lake_color', lake_color)
-    if land_on or landmask_on:
+    if land_on :
         # use Basemap.fillcontinents method
         m.fillcontinents(color=land_color, lake_color=lake_color,
-            zorder=land_zorder, **land_kw)
+            **land_kw)
 
     # coastlines
-    default_coastline_on = (not land_on) and (not landmask_on)
-    coastline_on = kw.pop('coastline_on', default_coastline_on)
+    coastline_on = kw.pop('coastline_on', not land_on)
     if coastline_on:
         coastline_kw = kw.pop('coastline_kw', {})
         # use Basemap.drawcoastlines method
@@ -347,8 +333,6 @@ def geoplot(data=None, lon=None, lat=None, **kw):
         coastline_lw = coastline_kw.pop('linewidth', coastline_lw)
         m.drawcoastlines(color=coastline_color, linewidth=coastline_lw,
             **coastline_kw)
-
-
 
     # parallels
     grid_on = kw.pop('grid_on', True)
@@ -389,6 +373,8 @@ def geoplot(data=None, lon=None, lat=None, **kw):
             if proj in ('npstere', 'nplaea', 'npaeqd',
                 'spstere', 'splaea', 'spaeqd'):
                 meridian_labels = [1, 1, 0, 0]
+            elif proj in ('hammer', 'moll'):
+                meridian_labels = [0, 0, 0, 0]
             else:
                 meridian_labels = [0, 0, 0, 1]
         else:
