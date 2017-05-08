@@ -14,4 +14,4 @@
 
 ### Examples
 
-1. [Create a basemap](examples.create_basemap.ipynb)
+1. [Create a basemap](examples/create_basemap.ipynb)
