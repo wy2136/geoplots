@@ -1,6 +1,6 @@
 # geoplots: customized python plots for geoscience
 
-## Example
+### Get Started
 
     from geoplots import geoplot
     import xarray as xr
@@ -11,3 +11,7 @@
     plt.title('GPCP Precipitation Climatology: 1980-2010')
 
 ![GPCP Precipitation Climatology: 1980-2010](examples/gpcp_climatology.png)
+
+### Examples
+
+1. [Create a basemap](examples.create_basemap.ipynb)
