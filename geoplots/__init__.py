@@ -4,7 +4,7 @@ Author: Wenchang Yang (yang.wenchang@uci.edu)
 
 # from .geoplotlib import geoplot
 from .basemap.geoplotlib import geoplot # .geoplotlib is an old version
-from .xyplotlib import xyplot
+from .fxyplotlib import fxyplot
 from .mapplotlib import mapplot
 from .util import (xticksyear, xticks2lat, xticks2lon, xticks2month,
     xticks2dayofyear,

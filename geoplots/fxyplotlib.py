@@ -19,7 +19,7 @@ except ImportError:
 
 
 # ###### universal 2-D plot function
-def xyplot(data=None, x=None, y=None, **kw):
+def fxyplot(data=None, x=None, y=None, **kw):
     '''Show 2D data.
 
     Parameters
@@ -293,28 +293,26 @@ def xyplot(data=None, x=None, y=None, **kw):
 
 
     # colorbar parameters
-    if plot_type in ('pcolor', 'pcolormesh', 'contourf', 'contourf+',
-        'imshow'):
-        cbar_type = kw.pop('cbar_type', 'vertical')
-        cbar_kw = kw.pop('cbar_kw', {})
-        cbar_extend = kw.pop('cbar_extend', 'neither')
-        cbar_extend = cbar_kw.pop('extend', cbar_extend)
-        hide_cbar = kw.pop('hide_cbar', False)
-        if cbar_type in ('v', 'vertical'):
-            cbar_size = kw.pop('cbar_size', '2.5%')
-            cbar_size = cbar_kw.pop('size', cbar_size)
-            cbar_pad = kw.pop('cbar_pad', 0.1)
-            cbar_pad = cbar_kw.pop('pad', cbar_pad)
-            cbar_position = 'right'
-            cbar_orientation = 'vertical'
-        elif cbar_type in ('h', 'horizontal'):
-            # cbar = hcolorbar(units=units)
-            cbar_size = kw.pop('cbar_size', '5%')
-            cbar_size = cbar_kw.pop('size', cbar_size)
-            cbar_pad = kw.pop('cbar_pad', 0.4)
-            cbar_pad = cbar_kw.pop('pad', cbar_pad)
-            cbar_position = 'bottom'
-            cbar_orientation = 'horizontal'
+    cbar_on = kw.pop('cbar_on', None)
+    cbar_type = kw.pop('cbar_type', 'vertical')
+    cbar_kw = kw.pop('cbar_kw', {})
+    cbar_extend = kw.pop('cbar_extend', 'neither')
+    cbar_extend = cbar_kw.pop('extend', cbar_extend)
+    if cbar_type in ('v', 'vertical'):
+        cbar_size = kw.pop('cbar_size', '2.5%')
+        cbar_size = cbar_kw.pop('size', cbar_size)
+        cbar_pad = kw.pop('cbar_pad', 0.1)
+        cbar_pad = cbar_kw.pop('pad', cbar_pad)
+        cbar_position = 'right'
+        cbar_orientation = 'vertical'
+    elif cbar_type in ('h', 'horizontal'):
+        # cbar = hcolorbar(units=units)
+        cbar_size = kw.pop('cbar_size', '5%')
+        cbar_size = cbar_kw.pop('size', cbar_size)
+        cbar_pad = kw.pop('cbar_pad', 0.4)
+        cbar_pad = cbar_kw.pop('pad', cbar_pad)
+        cbar_position = 'bottom'
+        cbar_orientation = 'horizontal'
     # units in colorbar
     units = kw.pop('units', None)
     if units is None:
@@ -438,8 +436,13 @@ def xyplot(data=None, x=None, y=None, **kw):
         plt.clim(clim)
 
     # plot colorbar
-    if plot_type in ('pcolor', 'pcolormesh', 'contourf', 'contourf+',
-        'imshow'):
+    if cbar_on is None:
+        if plot_type in ('pcolor', 'pcolormesh', 'contourf', 'contourf+',
+            'imshow'):
+            cbar_on = True
+        else:
+            cbar_on = False
+    if cbar_on:
         ax_current = plt.gca()
         divider = make_axes_locatable(ax_current)
         cax = divider.append_axes(cbar_position, size=cbar_size, pad=cbar_pad)
@@ -457,9 +460,6 @@ def xyplot(data=None, x=None, y=None, **kw):
                 cbar.ax.set_xlabel('{}{}'.format(long_name, units))
             else:
                 cbar.ax.set_xlabel('{} [{}]'.format(long_name, units))
-        # remove the colorbar to avoid repeated colorbars
-        if hide_cbar:
-            cbar.remove()
         # set back the main axes as the current axes
         plt.sca(ax_current)
 

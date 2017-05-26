@@ -101,15 +101,12 @@ def geoplot(data=None, lon=None, lat=None, **kw):
 
     Quiver plot related parameters:
     --------------------------------
-        stride: stride along lon and lat.
-        stride_lon: stride along lon.
-        stride_lat: stride along lat.
         quiver_scale: quiver scale.
         quiver_color: quiver color.
-        sparse_polar_grids: bool, default is True.
         quiver_kw: dict parameters used in the plt.quiver function.
+        regrid_shape: int or tuple.
 
-        hide_qkey: bool value, whether to show the quiverkey plot.
+        qkey_on: bool value, whether to show the quiverkey plot.
         qkey_X: X parameter in the plt.quiverkey function (default is 0.85).
         qkey_Y: Y parameter in the plt.quiverkey function (default is 1.02).
         qkey_U: U parameter in the plt.quiverkey function (default is 2).
@@ -533,6 +530,8 @@ def geoplot(data=None, lon=None, lat=None, **kw):
     X, Y = m(Lon, Lat)
     Lon_edge, Lat_edge = np.meshgrid(lon_edge, lat_edge)
     X_edge, Y_edge = m(Lon_edge, Lat_edge)
+    if np.any(np.isnan(zz)):
+        zz = ma.masked_invalid(zz) # mask invalid values
 
     # ###### plot
     # pcolor
@@ -612,12 +611,15 @@ def geoplot(data=None, lon=None, lat=None, **kw):
         qkey_kw = kw.pop('qkey_kw', {})
         qkey_on = kw.pop('qkey_on', True)
         qkey_X = kw.pop('qkey_X', 0.9)
+        qkey_X = qkey_kw.pop('X', qkey_X)
         qkey_Y = kw.pop('qkey_Y', 1.03)
-        qkey_U = kw.pop('qkey_U', zz.max())
+        qkey_Y = qkey_kw.pop('Y', qkey_Y)
+        qkey_U = kw.pop('qkey_U', np.nanmax(zz))
+        qkey_U = qkey_kw.pop('U', qkey_U)
         qkey_label = kw.pop('qkey_label', '{:.2g} '.format(qkey_U) + units)
         qkey_label = qkey_kw.pop('label', qkey_label)
         qkey_labelpos = kw.pop('qkey_labelpos', 'W')
-        qkey_labelpos = kw.pop('labelpos', qkey_labelpos)
+        qkey_labelpos = qkey_kw.pop('labelpos', qkey_labelpos)
 
         if magnitude_on:
             magnitude = np.sqrt(uu**2 + vv**2)
