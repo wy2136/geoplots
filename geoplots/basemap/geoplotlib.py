@@ -217,8 +217,12 @@ def geoplot(data=None, lon=None, lat=None, **kw):
     if proj in ('lcc', 'laea'):
         lon_0 = kw.pop('lon_0', -100) # center longitude prescribed
     else:
-        lon_0 = kw.pop('lon_0', 0) # center longitude prescribed
-    if proj in ('moll', 'cyl', 'hammer', 'robin'):
+        if np.isclose( np.abs(lon[-1]-lon[0]+lon[-1]-lon[-2]), 360 ):
+            lon_0 = kw.pop('lon_0', 0) # center longitude prescribed
+        else:
+            lon_0 = kw.pop('lon_0', (lon[0]+lon[-1])/2)
+    if proj in ('moll', 'cyl', 'hammer', 'robin') \
+        and np.isclose( np.abs(lon[-1]-lon[0]+lon[-1]-lon[-2]), 360 ):
         # modify lon_0
         lon_0 = basemap_kw.pop('lon_0', lon_0)
         lon_0_data = (lon[0] + lon[-1])/2.0 # center longitude of data coverage
@@ -378,7 +382,7 @@ def geoplot(data=None, lon=None, lat=None, **kw):
             meridian_labels = [0, 0, 0, 0]
     if meridians is not None:
         m.drawmeridians(meridians, color=meridian_color,
-            label=meridians_labels,
+            label=meridian_labels,
             linewidth=meridian_lw, **meridian_kw)
     elif grid_on:
         m.drawmeridians(np.arange(0, 360, 30), color=meridian_color,
@@ -637,7 +641,8 @@ def geoplot(data=None, lon=None, lat=None, **kw):
 
     # hatch plot
     elif plot_type in ('hatch', 'hatches'):
-        hatches = kw.pop('hatches', ['///'])
+        # hatches = kw.pop('hatches', ['///'])
+        hatches = kw.pop('hatches', ['...'])
         plot_obj = m.contourf(X, Y, zz, colors='none', hatches=hatches,
             extend='both', **kw)
     else:
