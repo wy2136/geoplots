@@ -180,8 +180,14 @@ def mapplot(lon=None, lat=None, **kw):
             color=coastlines_color, linewidth=coastlines_width,
             **kw)
 
-    xticks2lon(xticks)
-    yticks2lat(yticks)
+    try:
+        xticks2lon(xticks)
+    except:
+        pass#xticks2lon fails when some ticks have no ticklabels
+    try:
+        yticks2lat(yticks)
+    except:
+        pass#xticks2lon fails when some ticks have no ticklabels
     plt.xlim(min(lon_edge), max(lon_edge))
     plt.ylim(min(lat_edge), max(lat_edge))
 

@@ -124,7 +124,7 @@ def geoplot(data=None, lon=None, lat=None, **kw):
 
     Colorbar related parameters:
     -------------------------------
-        hide_cbar: bool value, whether to show the colorbar.
+        cbar_on: bool value, whether to show the colorbar.
         cbar_type: 'vertical'(shorten as 'v') or 'horizontal' (shorten as 'h').
         cbar_extend: extend parameter in the plt.colorbar function.
             'neither' as default here.
