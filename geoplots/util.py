@@ -6,13 +6,20 @@ from matplotlib import dates
 import datetime
 import numpy as np
 
-def xticksmonth(bymonth=None, bymonthday=1, interval=1, tz=None, ax=None):
+def xticksmonth(bymonth=None, bymonthday=1, interval=1, tz=None, ax=None,
+    fstr=None):
     """Make ticks on a given day of each year that is a multiple of base."""
     if ax is None:
         ax = plt.gca()
+    if fstr is None:
+        fstr = '%Y-%m'
     months = dates.MonthLocator(bymonth=bymonth, bymonthday=bymonthday,
         interval=interval, tz=tz)
     ax.xaxis.set_major_locator(months)
+
+    # DateFormatter
+    f = dates.DateFormatter(fstr)
+    ax.xaxis.set_major_formatter(f)
 
 def xticksyear(base=1, month=1, day=1, tz=None, ax=None):
     """Make ticks on a given day of each year that is a multiple of base."""
