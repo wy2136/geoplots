@@ -221,7 +221,7 @@ def geoplot(data=None, lon=None, lat=None, **kw):
             lon_0 = kw.pop('lon_0', 0) # center longitude prescribed
         else:
             lon_0 = kw.pop('lon_0', (lon[0]+lon[-1])/2)
-    if proj in ('moll', 'cyl', 'hammer', 'robin') \
+    if proj in ('moll', 'cyl', 'hammer', 'robin', 'kav7') \
         and np.isclose( np.abs(lon[-1]-lon[0]+lon[-1]-lon[-2]), 360 ):
         # modify lon_0
         lon_0 = basemap_kw.pop('lon_0', lon_0)
