@@ -302,6 +302,19 @@ def geoplot(data=None, lon=None, lat=None, **kw):
         llcrnrlat=llcrnrlat, urcrnrlat=urcrnrlat,
         width=basemap_width, height=basemap_height,
         **basemap_kw)
+    # test
+    '''
+    print('projection', proj)
+    print('lon_0', lon_0)
+    print('lat_0', lat_0)
+    print('round', basemap_round)
+    print('llcrnrlon', llcrnrlon)
+    print('urcrnrlon', urcrnrlon)
+    print('llcrnrlat', llcrnrlat)
+    print('urcrnrlat', urcrnrlat)
+    print('width', basemap_width)
+    print('height', basemap_height)
+    '''
 
     # show continents or plot coast lines
     # ocean
