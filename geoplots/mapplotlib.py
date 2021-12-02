@@ -35,12 +35,14 @@ def _load_coast():
     coast_lon = np.load(lon_path)
     coast_lat = np.load(lat_path)
     return coast_lon, coast_lat
-def xticks2lon(new_xticks=None):
+def xticks2lon(ax=None, new_xticks=None):
     '''Convert xticks to longitudes. '''
+    if ax is None:
+        ax = plt.gca()
     if new_xticks is not None:
-        plt.gca().set_xticks(new_xticks)
-    current_xticks = plt.gca().get_xticks()
-    current_xticklabels = plt.gca().get_xticklabels()
+        ax.set_xticks(new_xticks)
+    current_xticks = ax.get_xticks()
+    current_xticklabels = ax.get_xticklabels()
     new_xticklabels = current_xticklabels
     for i, x in enumerate(current_xticks):
         x = np.mod(x,360)
@@ -55,13 +57,15 @@ def xticks2lon(new_xticks=None):
         elif x==0 or x==180:
             # new_xticklabels[i] = str(int(x)) + '$^{\circ}$'
             new_xticklabels[i] = '{}$^{{\circ}}$'.format(x)
-    plt.gca().set_xticklabels(new_xticklabels)
-def yticks2lat(new_yticks=None):
+    ax.set_xticklabels(new_xticklabels)
+def yticks2lat(ax=None, new_yticks=None):
     '''Convert yticks to latitudes. '''
+    if ax is None:
+        ax = plt.gca()
     if new_yticks is not None:
-        plt.gca().set_yticks(new_yticks)
-    current_yticks = plt.gca().get_yticks()
-    current_yticklabels = plt.gca().get_yticklabels()
+        ax.set_yticks(new_yticks)
+    current_yticks = ax.get_yticks()
+    current_yticklabels = ax.get_yticklabels()
     new_yticklabels = current_yticklabels
     for i, y in enumerate(current_yticks):
         if y>0:
@@ -70,7 +74,7 @@ def yticks2lat(new_yticks=None):
             new_yticklabels[i] = str(int(-y))+'$^{\circ}$S'
         else:
             new_yticklabels[i] = str(int(y)) + '$^{\circ}$'
-    plt.gca().set_yticklabels(new_yticklabels)
+    ax.set_yticklabels(new_yticklabels)
 #
 # ######## plot basemap
 def mapplot(lon=None, lat=None, **kw):
@@ -94,7 +98,6 @@ def mapplot(lon=None, lat=None, **kw):
         coastlines_color: color of coastlines, default is 0.33.
         coastlines_width: line width of coastlines, default is 1.
     '''
-
     if lon is None:
         if plt.get_fignums():# figures already exist
             lon = plt.gca().get_xlim()
@@ -111,7 +114,7 @@ def mapplot(lon=None, lat=None, **kw):
     ax = kw.pop('ax', None)
     if ax is None:
         ax = plt.gca()
-    plt.sca(ax)
+    #plt.sca(ax)
 
     # get grid edges
     lon_edge, lat_edge = _get_grid_edges(lon, lat)
@@ -137,7 +140,7 @@ def mapplot(lon=None, lat=None, **kw):
         lonlatbox_kw = kw.pop('lonlatbox_kw', {})
         lonlatbox_color = kw.pop('lonlatbox_color', 'k')
         lonlatbox_color = lonlatbox_kw.pop('color', lonlatbox_color)
-        plt.plot(lon_, lat_, color=lonlatbox_color, **lonlatbox_kw)
+        ax.plot(lon_, lat_, color=lonlatbox_color, **lonlatbox_kw)
 
     # plot coast lines
     # load coast data
@@ -146,6 +149,8 @@ def mapplot(lon=None, lat=None, **kw):
     fill_continents = kw.pop('fill_continents', False)
     xticks = kw.pop('xticks', np.arange(-180, 360, 60))
     yticks = kw.pop('yticks', np.arange(-90, 91, 30))
+    #xticks = kw.pop('xticks', None)
+    #yticks = kw.pop('yticks', None)
     if fill_continents:
         # indices of western and eastern boundaries
         ivec = np.arange(lonlon.size)[latlat==-83.83]
@@ -168,7 +173,7 @@ def mapplot(lon=None, lat=None, **kw):
             -90, latlat[i4:i5+1], -90,
             latlat[i5+1:]))
         continents_color = kw.pop('continents_color', '0.33')
-        plt.fill(lonlon, latlat,
+        ax.fill(lonlon, latlat,
             color=continents_color, edgecolor='none',
             **kw)
     else:
@@ -176,19 +181,19 @@ def mapplot(lon=None, lat=None, **kw):
         coastlines_color = kw.pop('coastlines_color', '0.33')
         coastlines_width = kw.pop('linewidth', 1)
         coastlines_width = kw.pop('coastlines_width', coastlines_width)
-        plt.plot(lonlon, latlat,
+        ax.plot(lonlon, latlat,
             color=coastlines_color, linewidth=coastlines_width,
             **kw)
 
     try:
-        xticks2lon(xticks)
+        xticks2lon(ax, xticks)
     except:
         pass#xticks2lon fails when some ticks have no ticklabels
     try:
-        yticks2lat(yticks)
+        yticks2lat(ax, yticks)
     except:
         pass#xticks2lon fails when some ticks have no ticklabels
-    plt.xlim(min(lon_edge), max(lon_edge))
-    plt.ylim(min(lat_edge), max(lat_edge))
+    ax.set_xlim(min(lon_edge), max(lon_edge))
+    ax.set_ylim(min(lat_edge), max(lat_edge))
 
     return

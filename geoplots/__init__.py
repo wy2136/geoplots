@@ -3,7 +3,10 @@ Author: Wenchang Yang (yang.wenchang@uci.edu)
 '''
 
 # from .geoplotlib import geoplot
-from .basemap.geoplotlib import geoplot # .geoplotlib is an old version
+try:
+    from .basemap.geoplotlib import geoplot # .geoplotlib is an old version
+except:
+    print('There are some problems for the deprecated basemap package.')
 from .fxyplotlib import fxyplot
 from .mapplotlib import mapplot
 from .util import (xticksmonth, xticksyear, xticks2lat, xticks2lon, xticks2month,

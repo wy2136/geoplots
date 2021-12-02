@@ -31,12 +31,12 @@ def xticksyear(base=1, month=1, day=1, tz=None, ax=None):
 
 def xticks2lon(xticks=None, **kw):
     '''Convert xticks to longitudes. '''
-    ax = plt.gca()
+    ax = kw.pop('ax', plt.gca())
 
     if xticks is None:
         xticks = ax.get_xticks()
     else:
-        plt.xticks(xticks)
+        ax.set_xticks(xticks)
     xticklabels = ax.get_xticklabels()
 
     for i, x in enumerate(xticks):
@@ -53,15 +53,16 @@ def xticks2lon(xticks=None, **kw):
             # new_xticklabels[i] = str(int(x)) + '$^{\circ}$'
             xticklabels[i] = '{}$^{{\circ}}$'.format(x)
 
-    plt.xticks(xticks, xticklabels, **kw)
+    ax.set_xticklabels(xticklabels, **kw)
+
 def yticks2lon(yticks=None, **kw):
     '''Convert xticks to longitudes. '''
-    ax = plt.gca()
+    ax = kw.pop('ax', plt.gca() )
 
     if yticks is None:
         yticks = ax.get_yticks()
     else:
-        plt.yticks(yticks)
+        ax.set_yticks(yticks)
     yticklabels = ax.get_yticklabels()
 
     for i, y in enumerate(yticks):
@@ -78,16 +79,17 @@ def yticks2lon(yticks=None, **kw):
             # new_xticklabels[i] = str(int(x)) + '$^{\circ}$'
             yticklabels[i] = '{}$^{{\circ}}$'.format(y)
 
-    plt.yticks(yticks, yticklabels, **kw)
+    #plt.yticks(yticks, yticklabels, **kw)
+    ax.set_yticklabels(yticklabels, **kw)
 
 def xticks2lat(xticks=None, **kw):
     '''Convert yticks to latitudes. '''
-    ax = plt.gca()
+    ax = kw.pop('ax', plt.gca())
 
     if xticks is None:
         xticks = ax.get_xticks()
     else:
-        plt.xticks(xticks)
+        ax.set_xticks(xticks)
     xticklabels = ax.get_xticklabels()
 
     for i, x in enumerate(xticks):
@@ -98,15 +100,17 @@ def xticks2lat(xticks=None, **kw):
         else:
             xticklabels[i] = '0$^{\circ}$'
 
-    plt.xticks(xticks, xticklabels, **kw)
+    #plt.xticks(xticks, xticklabels, **kw)
+    ax.set_xticklabels(xticklabels, **kw)
+
 def yticks2lat(yticks=None, **kw):
     '''Convert yticks to latitudes. '''
-    ax = plt.gca()
+    ax = kw.pop('ax', plt.gca())
 
     if yticks is None:
         yticks = ax.get_yticks()
     else:
-        plt.yticks(yticks)
+        ax.set_yticks(yticks)
     yticklabels = ax.get_yticklabels()
 
     for i, y in enumerate(yticks):
@@ -117,19 +121,19 @@ def yticks2lat(yticks=None, **kw):
         else:
             yticklabels[i] = '0$^{\circ}$'
 
-    plt.yticks(yticks, yticklabels, **kw)
+    ax.set_yticklabels(yticklabels, **kw)
 
 def yticks2p(yticks=None, **kw):
     '''Convert yticks to pressure level'''
+    ax = kw.pop('ax', plt.gca())
 
     if yticks is not None:
-        plt.yticks(yticks, **kw)
-
-    ax = plt.gca()
+        ax.set_yticks(yticks, **kw)
     ax.invert_yaxis()
 
 def xticks2month(xticks=None, show_initials=False, **kw):
     '''Convert xticks to months. '''
+    ax = kw.pop('ax', plt.gca())
     if xticks is None:
         xticks = range(1,13)
     month_numbers = [(m-1)%12 + 1 for m in xticks]
@@ -137,10 +141,13 @@ def xticks2month(xticks=None, show_initials=False, **kw):
         for month in month_numbers]
     if show_initials:
         months = [mon[0] for mon in months]
-    plt.xlim(xticks[0]-0.5, xticks[-1]+0.5)
-    plt.xticks(xticks,months, **kw)
+    ax.set_xlim(xticks[0]-0.5, xticks[-1]+0.5)
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(months, **kw)
+
 def yticks2month(yticks=None, show_initials=False, **kw):
     '''Convert yticks to months. '''
+    ax = kw.pop('ax', plt.gca())
     if yticks is None:
         yticks = range(1, 13)
     month_numbers = [(m-1)%12 + 1 for m in yticks]
@@ -148,24 +155,30 @@ def yticks2month(yticks=None, show_initials=False, **kw):
         for month in month_numbers]
     if show_initials:
         months = [mon[0] for mon in months]
-    plt.ylim(yticks[0]-0.5, yticks[-1]+0.5)
-    plt.yticks(yticks, months, **kw)
-    plt.gca().invert_yaxis()
+    ax.set_ylim(yticks[0]-0.5, yticks[-1]+0.5)
+    ax.set_yticks(yticks)
+    ax.set_yticklabels(months, **kw)
+    ax.invert_yaxis()
 
 def xticks2dayofyear(**kw):
     '''adjust xticks when it represents day of year.'''
+    ax = kw.pop('ax', plt.gca())
     xticks = [datetime.datetime(2000, month, 1).timetuple().tm_yday
         for month in range(1, 13)]
     months = [datetime.datetime(2000, month, 1).strftime('%b')
         for month in range(1, 13)]
-    plt.xticks(xticks, months, ha='left', **kw)
-    plt.xlim(1, 366)
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(months, ha='left', **kw)
+    ax.set_xlim(1, 366)
+
 def yticks2dayofyear(**kw):
     '''adjust yticks when it represents day of year.'''
+    ax = kw.pop('ax', plt.gca())
     yticks = [datetime.datetime(2000, month, 1).timetuple().tm_yday
         for month in range(1, 13)]
     months = [datetime.datetime(2000, month, 1).strftime('%b')
         for month in range(1, 13)]
-    plt.yticks(yticks, months, **kw)
-    plt.ylim(1, 366)
-    plt.gca().invert_yaxis()
+    ax.set_yticks(yticks)
+    ax.set_yticklabels(months, **kw)
+    ax.set_ylim(1, 366)
+    ax.invert_yaxis()

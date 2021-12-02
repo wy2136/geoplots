@@ -17,6 +17,7 @@ def cartoproj(name=None, **kws):
         'robin': ccrs.Robinson,
         'moll': ccrs.Mollweide,
         'ortho': ccrs.Orthographic,
+        'pv': ccrs.NearsidePerspective,
         'geo': ccrs.Geostationary
     }
 
@@ -51,6 +52,12 @@ def cartofeature(name=None):
 def cartoplot(da, **kws):
     '''visulize data on basemap using the cartopy package'''
     # params: proj_kws, proj, dproj, ax, ...
+
+    # figure
+    figsize = kws.pop('figsize', None)
+    if figsize is not None:
+        fig = plt.figure(figsize=figsize)
+
 
     # plot types
     plot_type = kws.pop('plot_type', 'default')

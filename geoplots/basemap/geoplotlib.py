@@ -3,6 +3,11 @@
 """
 # from .mypyplot import vcolorbar, hcolorbar
 
+# needed for recent versions of basemap
+import os, sys
+if 'PROJ_LIB' not in os.environ: #and sys.version < '3.9':
+    os.environ['PROJ_LIB'] = '/'.join ( os.__file__.split('/')[:-3] + ['share', 'proj'])
+    print('[added]: PROJ_LIB =', os.environ['PROJ_LIB'])
 import numpy as np
 from numpy import ma
 import matplotlib.pyplot as plt
